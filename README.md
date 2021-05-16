@@ -18,6 +18,7 @@
   - [6.3. Analysis of ANN loss](#63-analysis-of-ann-loss)
   - [6.4. Analysis of cumulative reward](#64-analysis-of-cumulative-reward)
   - [6.5. Model size analysis](#65-model-size-analysis)
+- [Conclusion](#conclusion)
 - [7. References](#7-references)
 
 # Deep learning models for contextual multi-armed bandit setting
@@ -105,9 +106,8 @@ The difference between the highest reward at time step t and the reward that the
 
 ## 6.1. Testbed
 
-To build our evaluation pipeline we used tf-agents to construct a testbed for loading the data, defining the environment, building different agents, and running the training loop. The OBD data is loaded in memory using tf dataset API. We only used the data for random policy and men's campaigns for evaluating the agents. The input categorical features are converted to one-hot encoding. Time stamp feature is converted into two features, first is the hour of the day, and second is the day of the week. The data is divided into small batches of 10 and the agents give actions for each batch in one call.
-
-A training loop is conducted to cover the whole length of the data so that the agent sees the data at least once. The training algorithm makes 100 steps of environment batches first before updating updating the agent's model of the reward. This means that the agent will update its model after 1000 predictions thus simulating online models with delayed feedbacks.
+To build our evaluation pipeline, we used tf-agents to construct a testbed to load the data, define the environment, build different agents, and run the training loop. The OBD data is loaded in memory using tf dataset API. We only used the data for random policy and men's campaigns for evaluating the agents. The categorical input features are converted to one-hot encoding. The timestamp feature is converted into two features: the hour of the day, and the second is the day of the week. The data is divided into small batches of 10, and the agents give actions for each batch in one call.
+A training loop is conducted to cover the whole length of the data so that the agent sees the data at least once. The training algorithm makes 100 steps of environment batches first before updating the agent's model of the reward. This means that the agent will update its model after 1000 predictions, thus simulating online models with delayed feedbacks.
 
 ![training_flow](./imgs/training_flow.png)
 
@@ -122,19 +122,35 @@ A training loop is conducted to cover the whole length of the data so that the a
 |    WND-3 | A wide and deep neural network with 3 layers in the deep tower of dimensions (4096, 128, 128).             |
 |          &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;|                                                                                                           |
 
-All the models are trained with an Adam optimizer and 0.05 learning rate. Each ANN has a variant trained for 100 n-train and antoher for 50 n-train as discussed in the next section.
+All the models are trained with an Adam optimizer and 0.05 learning rate. Each ANN has a variant trained for 100 n-train and another for 50 n-train, as discussed in the next section.
 
 ## 6.3. Analysis of ANN loss
 
-During the n-train steps we looked at the loss of the reward layer and we found out that after 50 steps of training the loss starts to increase again and hence we have variants of the neural network models trained only up to 50 n-train instead of the default 100.
+During the n-train steps, we looked at the loss of the reward layer, and we found out that after 50 steps of training, the loss starts to increase again, and hence we have variants of the neural network models trained only up to 50 n-train instead of the default 100.
 
 ![loss_analysis](./imgs/loss_analysis.png)
 
 ## 6.4. Analysis of cumulative reward
+The cumulative reward metric in the graph below shows that DCN3-100S, DCN3-500S, and WND3-50S performed better than most. None of the deeper networks performed well, and this remains a point of future investigations.
 
+![cumularive_reward_result](./imgs/cumularive_reward_result.svg)
+
+Following, we compare the neural network models to the LinUCB as the control model. There is a 16.3% increase in accumulated rewards when using WND3-50s, followed by 9% and 7% for DCN3-100s and DCN3-50s, respectively.
+
+|                                  | LinUCB | DCN4-100S    | DCN4-50S     | DCN3-100S   | DCN3-50S    | WND5-100S    | WND5-50S     | WND3-100S    | WND3-50S    |
+|----------------------------------|--------|--------------|--------------|-------------|-------------|--------------|--------------|--------------|-------------|
+| Cumulative reward                | 55     | 43           | 51           | 60          | 59          | 41           | 42           | 53           | 64          |
+| Relative diffference % to LinUCB | 0      | -21.81818182 | -7.272727273 | 9.090909091 | 7.272727273 | -25.45454545 | -23.63636364 | -3.636363636 | 16.36363636 |
+
+
+![relative_diff](./imgs/relative_diff.svg)
 
 ## 6.5. Model size analysis
 
+TODO
+
+# Conclusion
+Using deep neural networks proved to be effective in increasing the accumulated rewards in contextual armed bandit problems. The number of training steps that are used to train the ANN at the beginning is a crucial hyperparameter; for example, training WND3 for 50 steps resulted in 20% more rewards. 
 
 # 7. References
 
