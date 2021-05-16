@@ -18,8 +18,8 @@
   - [6.3. Analysis of ANN loss](#63-analysis-of-ann-loss)
   - [6.4. Analysis of cumulative reward](#64-analysis-of-cumulative-reward)
   - [6.5. Model size analysis](#65-model-size-analysis)
-- [Conclusion](#conclusion)
-- [7. References](#7-references)
+- [7. Conclusion](#7-conclusion)
+- [8. References](#8-references)
 
 # Deep learning models for contextual multi-armed bandit setting
 
@@ -149,10 +149,10 @@ Following, we compare the neural network models to the LinUCB as the control mod
 
 TODO
 
-# Conclusion
+# 7. Conclusion
 Using deep neural networks proved to be effective in increasing the accumulated rewards in contextual armed bandit problems. The number of training steps that are used to train the ANN at the beginning is a crucial hyperparameter; for example, training WND3 for 50 steps resulted in 20% more rewards. 
 
-# 7. References
+# 8. References
 
 [1] Deep & Cross Network for Ad Click Predictions.
 
